@@ -1345,7 +1345,7 @@ struct TMDBMovieDetailView: View {
                                 .fontWeight(.bold)
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
-                                    ForEach(credits.cast.prefix(20)) { person in
+                                    ForEach(Array(credits.cast.prefix(20).enumerated()), id: \.offset) { _, person in
                                         Button {
                                             openIMDBForPerson(id: person.id)
                                         } label: {
@@ -1367,7 +1367,7 @@ struct TMDBMovieDetailView: View {
                                 .fontWeight(.bold)
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
-                                    ForEach(credits.crew.prefix(20)) { person in
+                                    ForEach(Array(credits.crew.prefix(20).enumerated()), id: \.offset) { _, person in
                                         Button {
                                             openIMDBForPerson(id: person.id)
                                         } label: {

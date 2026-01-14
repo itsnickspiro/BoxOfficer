@@ -1,0 +1,7 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test -scheme BoxOfficer -destination "generic/platform=iOS Simulator"
+
+2026-01-14 11:06:25.376 xcodebuild[12151:259414] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-01-14 11:06:26.692 xcodebuild[12151:259414] Writing error result bundle to /var/folders/ww/l59xm8yn5w96qjvf120w6cd80000gn/T/ResultBundle_2026-14-01_11-06-0026.xcresult
+xcodebuild: error: Failed to build project BoxOfficer with scheme BoxOfficer.: Cannot test target “BoxOfficerTests” on “Any iOS Simulator Device”: Tests must be run on a concrete device
+Cannot test target “BoxOfficerUITests” on “Any iOS Simulator Device”: Tests must be run on a concrete device
