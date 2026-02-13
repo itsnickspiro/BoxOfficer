@@ -1,0 +1,12 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "movies",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "popularity", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

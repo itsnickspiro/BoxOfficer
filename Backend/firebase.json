@@ -1,0 +1,18 @@
+{
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs20",
+    "predeploy": ["npm --prefix functions run build"]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "source": "web-dashboard",
+    "frameworksBackend": {
+      "region": "us-central1"
+    },
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+  }
+}

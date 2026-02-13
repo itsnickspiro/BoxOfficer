@@ -1,0 +1,24 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xcworkspace
+xcuserdata/
+
+# Secrets (NEVER commit API keys)
+BoxOfficer/Secrets.plist
+
+# macOS
+.DS_Store
+*.swp
+
+# Backend
+Backend/functions/node_modules/
+Backend/web-dashboard/node_modules/
+Backend/web-dashboard/.next/
+Backend/.env
+Backend/functions/.env
+
+# Firebase
+.firebase/
+firebase-debug.log
