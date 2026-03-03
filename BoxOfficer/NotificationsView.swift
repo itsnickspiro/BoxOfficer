@@ -44,7 +44,6 @@ struct NotificationsView: View {
             }
             .onAppear {
                 loadStoredNotifications()
-                requestNotificationPermissions()
             }
             .refreshable {
                 await checkForFinancialUpdates()
@@ -69,11 +68,11 @@ struct NotificationsView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
                 
-                NavigationLink("Browse Movies") {
-                    // This would navigate to your main movie browsing view
-                    Text("Navigate to Home to add movies")
-                }
-                .buttonStyle(.borderedProminent)
+                Text("Switch to the Home tab to browse and add movies to your watchlist.")
+                    .font(.callout)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
             } else {
                 Text("We'll notify you when financial data changes for your \(watchlistFilms.count) watchlist movies.")
                     .font(.body)
@@ -137,183 +136,39 @@ struct NotificationsView: View {
         }
     }
     
-    // MARK: - Notification Permissions
-    
-    private func requestNotificationPermissions() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
-            if granted {
-                // Permissions granted - could schedule background checks here
-            }
-        }
-    }
-    
-    private func sendLocalNotification(for notification: BoxOfficeNotification) {
-        let content = UNMutableNotificationContent()
-        content.title = notification.title
-        content.body = notification.message
-        content.sound = UNNotificationSound.default
-        
-        // Create a unique identifier
-        let identifier = notification.id.uuidString
-        
-        // Create a trigger for immediate notification
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-        
-        // Create the request
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-        
-        // Add the request
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Error scheduling notification: \(error)")
-            }
-        }
-    }
-    
     // MARK: - Financial Data Change Detection
-    
+
     private func checkForFinancialUpdates() async {
         guard !watchlistFilms.isEmpty else { return }
-        
+
         isCheckingForUpdates = true
         defer { isCheckingForUpdates = false }
-        
-        var newNotifications: [BoxOfficeNotification] = []
-        
-        // Check each watchlist film for financial data changes
-        for film in watchlistFilms {
-            do {
-                // Get latest data from TMDB API
-                if let latestData = try await fetchLatestFinancialData(for: film) {
-                    let changes = detectFinancialChanges(original: film, updated: latestData)
-                    
-                    for change in changes {
-                        let notification = createNotificationForChange(change, film: film)
-                        newNotifications.append(notification)
-                        
-                        // Update the film's data in the model
-                        updateFilmData(film, with: latestData)
-                    }
-                }
-            } catch {
-                print("Error fetching data for \(film.title): \(error)")
-                // Could add error notification here if needed
-            }
-        }
-        
-        // Add new notifications and store them
+
+        let newNotifications = await NotificationCheckService.shared.checkForUpdates(
+            films: watchlistFilms,
+            context: modelContext
+        )
+
         for notification in newNotifications {
             notifications.insert(notification, at: 0)
-            storeNotification(notification)
-            
-            // Send local push notification
-            sendLocalNotification(for: notification)
         }
-        
-        // Sort notifications by timestamp
         notifications.sort { $0.timestamp > $1.timestamp }
     }
-    
-    private func fetchLatestFinancialData(for film: Film) async throws -> FinancialData? {
-        // Get the TMDb ID from the film
-        guard let tmdbID = film.tmdbID ?? Int(film.id) else { return nil }
-        
-        // Fetch the latest movie details from TMDB API
-        let details = try await TMDBService.shared.fetchMovieDetails(id: tmdbID)
-        
-        return FinancialData(
-            budget: details.budget > 0 ? Int64(details.budget) : nil,
-            boxOffice: details.revenue > 0 ? Int64(details.revenue) : nil,
-            domesticBoxOffice: nil, // TMDB doesn't provide domestic/international split in basic details
-            internationalBoxOffice: nil
-        )
-    }
-    
-    private func detectFinancialChanges(original: Film, updated: FinancialData) -> [FinancialChange] {
-        var changes: [FinancialChange] = []
-        
-        // Check budget changes
-        if let originalBudget = original.budget, 
-           let updatedBudget = updated.budget,
-           originalBudget != updatedBudget {
-            changes.append(.budget(from: originalBudget, to: updatedBudget))
-        }
-        
-        // Check box office changes
-        if let originalBoxOffice = original.boxOffice,
-           let updatedBoxOffice = updated.boxOffice,
-           originalBoxOffice != updatedBoxOffice {
-            changes.append(.boxOffice(from: originalBoxOffice, to: updatedBoxOffice))
-        }
-        
-        // Check domestic box office changes
-        if let originalDomestic = original.domesticBoxOffice,
-           let updatedDomestic = updated.domesticBoxOffice,
-           originalDomestic != updatedDomestic {
-            changes.append(.domesticBoxOffice(from: originalDomestic, to: updatedDomestic))
-        }
-        
-        // Check international box office changes
-        if let originalInternational = original.internationalBoxOffice,
-           let updatedInternational = updated.internationalBoxOffice,
-           originalInternational != updatedInternational {
-            changes.append(.internationalBoxOffice(from: originalInternational, to: updatedInternational))
-        }
-        
-        return changes
-    }
-    
-    private func createNotificationForChange(_ change: FinancialChange, film: Film) -> BoxOfficeNotification {
-        let (title, message, type) = change.notificationContent(for: film.title)
-        
-        return BoxOfficeNotification(
-            id: UUID(),
-            title: title,
-            message: message,
-            type: type,
-            filmId: film.id,
-            timestamp: Date(),
-            isRead: false
-        )
-    }
-    
-    @MainActor
-    private func updateFilmData(_ film: Film, with data: FinancialData) {
-        if let budget = data.budget { film.budget = budget }
-        if let boxOffice = data.boxOffice { film.boxOffice = boxOffice }
-        if let domestic = data.domesticBoxOffice { film.domesticBoxOffice = domestic }
-        if let international = data.internationalBoxOffice { film.internationalBoxOffice = international }
-        
-        try? modelContext.save()
-    }
-    
-    // MARK: - Notification Storage (UserDefaults for simplicity)
-    
+
+    // MARK: - Notification Storage
+
     private func loadStoredNotifications() {
-        if let data = UserDefaults.standard.data(forKey: "StoredNotifications"),
-           let decoded = try? JSONDecoder().decode([BoxOfficeNotification].self, from: data) {
-            notifications = decoded.sorted { $0.timestamp > $1.timestamp }
-        }
+        notifications = NotificationCheckService.shared.loadStoredNotifications()
     }
-    
-    private func storeNotification(_ notification: BoxOfficeNotification) {
-        var stored = notifications
-        stored.append(notification)
-        saveNotifications(stored)
-    }
-    
+
     private func updateStoredNotification(_ notification: BoxOfficeNotification) {
-        saveNotifications(notifications)
+        NotificationCheckService.shared.saveNotifications(notifications)
     }
-    
+
     private func removeStoredNotification(_ notification: BoxOfficeNotification) {
-        saveNotifications(notifications.filter { $0.id != notification.id })
-    }
-    
-    private func saveNotifications(_ notificationsToSave: [BoxOfficeNotification]) {
-        if let encoded = try? JSONEncoder().encode(notificationsToSave) {
-            UserDefaults.standard.set(encoded, forKey: "StoredNotifications")
-        }
+        NotificationCheckService.shared.saveNotifications(
+            notifications.filter { $0.id != notification.id }
+        )
     }
 }
 

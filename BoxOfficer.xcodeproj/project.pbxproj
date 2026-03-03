@@ -416,6 +416,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = "HomieLabz.BoxOfficer.refresh";
 				INFOPLIST_KEY_OMDB_API_KEY = "$(OMDB_API_KEY)";
 				INFOPLIST_KEY_TMDB_API_KEY = "$(TMDB_API_KEY)";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -456,6 +457,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = "HomieLabz.BoxOfficer.refresh";
 				INFOPLIST_KEY_OMDB_API_KEY = "$(OMDB_API_KEY)";
 				INFOPLIST_KEY_TMDB_API_KEY = "$(TMDB_API_KEY)";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
