@@ -103,8 +103,8 @@ struct HomeView: View {
     @State private var isSearching = false
     @State private var comingSoonMovies: [TMDBMovie] = []
     @State private var isLoadingComingSoon = false
-    @State private var traktMovies: [TMDBMovie] = []
-    @State private var isLoadingTrakt = false
+    @State private var trendingMovies: [TMDBMovie] = []
+    @State private var isLoadingTrending = false
 
     // Helper to ensure Coming Soon only shows titles releasing today or later
     private func isReleaseDateInFuture(_ dateString: String?) -> Bool {
@@ -140,7 +140,7 @@ struct HomeView: View {
         case inTheaters = 0
         case streaming
         case topGrossing
-        case trendingTrakt
+        case trendingTMDB
         case comingSoon
         var id: Int { rawValue }
         var title: String {
@@ -148,7 +148,7 @@ struct HomeView: View {
             case .inTheaters: return "In Theaters"
             case .streaming: return "Digital"
             case .topGrossing: return "Top Grossing (All Time)"
-            case .trendingTrakt: return "Trending (Trakt)"
+            case .trendingTMDB: return "Trending"
             case .comingSoon: return "Coming Soon"
             }
         }
@@ -464,30 +464,29 @@ struct HomeView: View {
         }
     }
     
-    private func traktContent() -> some View {
+    private func trendingContent() -> some View {
         Group {
-            if isLoadingTrakt {
-                ProgressView("Loading Trakt trending...")
+            if isLoadingTrending {
+                ProgressView("Loading trending...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if traktMovies.isEmpty {
+            } else if trendingMovies.isEmpty {
                 ContentUnavailableView(
                     "No Trending Data",
                     systemImage: "flame",
-                    description: Text("Unable to load trending movies from Trakt.")
+                    description: Text("Unable to load trending movies.")
                 )
             } else {
                 List {
                     if isSearchFieldFocused && searchText.isEmpty {
-                        // Reusing search history logic
-                         if !recentSearches.isEmpty {
-                             ForEach(recentSearches, id: \.self) { query in
-                                 Button(query) {
-                                     searchText = query
-                                     addRecentSearch(query)
-                                     searchMovies()
-                                 }
-                             }
-                         }
+                        if !recentSearches.isEmpty {
+                            ForEach(recentSearches, id: \.self) { query in
+                                Button(query) {
+                                    searchText = query
+                                    addRecentSearch(query)
+                                    searchMovies()
+                                }
+                            }
+                        }
                     } else if !searchText.isEmpty {
                         ForEach(searchResults) { movie in
                             TMDBMovieRow(movie: movie) { showingMovieDetail = movie }
@@ -496,7 +495,7 @@ struct HomeView: View {
                                 }
                         }
                     } else {
-                        ForEach(traktMovies) { movie in
+                        ForEach(trendingMovies) { movie in
                             TMDBMovieRow(movie: movie) { showingMovieDetail = movie }
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     watchlistSwipeButton(for: movie)
@@ -544,8 +543,8 @@ struct HomeView: View {
                             streamingContent()
                         case .topGrossing:
                             topGrossingContent()
-                        case .trendingTrakt:
-                            traktContent()
+                        case .trendingTMDB:
+                            trendingContent()
                         case .comingSoon:
                             comingSoonContent()
                         }
@@ -553,22 +552,26 @@ struct HomeView: View {
                 }
             }
             .navigationTitle("Home")
-            .onAppear {
-                loadRecentMovies()
-                loadRecentSearches()
-            }
-            .onChange(of: selectedCategory) { _, newValue in
-                switch newValue {
+            .navigationTitle("Home")
+            .task(id: selectedCategory) {
+                // Determine if we need to load data for the selected category
+                switch selectedCategory {
                 case .inTheaters:
                     if recentMovies.isEmpty { loadRecentMovies() }
                 case .streaming:
                     if streamingMovies.isEmpty { loadStreamingMovies() }
                 case .topGrossing:
                     if topInternationalMovies.isEmpty { loadTopGrossing() }
-                case .trendingTrakt:
-                    if traktMovies.isEmpty { loadTraktTrending() }
+                case .trendingTMDB:
+                    if trendingMovies.isEmpty { loadTrendingMovies() }
                 case .comingSoon:
                     if comingSoonMovies.isEmpty { loadComingSoon() }
+                }
+            }
+            // Load initial search history only once
+            .onAppear {
+                if recentSearches.isEmpty {
+                    loadRecentSearches()
                 }
             }
             .sheet(item: $showingMovieDetail, onDismiss: {
@@ -755,18 +758,18 @@ struct HomeView: View {
         }
     }
     
-    private func loadTraktTrending() {
-        guard !isLoadingTrakt else { return }
-        isLoadingTrakt = true
+    private func loadTrendingMovies() {
+        guard !isLoadingTrending else { return }
+        isLoadingTrending = true
         Task {
             do {
-                let movies = try await TraktService.shared.fetchTrendingMovies()
+                let movies = try await TMDBService.shared.fetchTrendingMovies()
                 await MainActor.run {
-                    self.traktMovies = movies
-                    self.isLoadingTrakt = false
+                    self.trendingMovies = movies
+                    self.isLoadingTrending = false
                 }
             } catch {
-                await MainActor.run { self.isLoadingTrakt = false }
+                await MainActor.run { self.isLoadingTrending = false }
             }
         }
     }
@@ -971,6 +974,9 @@ struct TMDBMovieDetailView: View {
     // New state for OMDb detailed data
     @State private var omdbDetails: OMDbResponse?
     
+    // Toggle for Revenue History Chart
+    @State private var showingBoxOfficeHistory = false
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -1151,17 +1157,16 @@ struct TMDBMovieDetailView: View {
                                         }
                                     }
                                     
-                                    // Revenue breakdown section with OMDb fallback logic
+                                    // Theatrical Run Section
                                     if hasWorldwideRevenue || hasOMDbBoxOffice {
                                         VStack(alignment: .leading, spacing: 6) {
-                                            Text("Revenue Breakdown")
+                                            Text("Theatrical Run")
                                                 .font(.subheadline)
                                                 .fontWeight(.medium)
                                                 .foregroundColor(.secondary)
                                                 .padding(.top, 8)
                                             
                                             if hasWorldwideRevenue {
-                                                // Full breakdown when we have worldwide data
                                                 if let omdb = omdbDetails, 
                                                    let boxOfficeStr = omdb.BoxOffice, 
                                                    boxOfficeStr != "N/A",
@@ -1171,7 +1176,7 @@ struct TMDBMovieDetailView: View {
                                                     let estimatedInternational = max(0, worldwideRevenue - domesticRevenue)
                                                     
                                                     HStack {
-                                                        Text("• US Domestic:")
+                                                        Text("• Domestic:")
                                                             .font(.caption)
                                                         Spacer()
                                                         Text(formatCurrency(domesticRevenue))
@@ -1188,7 +1193,6 @@ struct TMDBMovieDetailView: View {
                                                             .foregroundColor(.primary)
                                                     }
                                                 } else {
-                                                    // Worldwide data available but no domestic breakdown
                                                     HStack {
                                                         Text("• Domestic:")
                                                             .font(.caption)
@@ -1208,9 +1212,8 @@ struct TMDBMovieDetailView: View {
                                                     }
                                                 }
                                             } else if hasOMDbBoxOffice {
-                                                // Only OMDb data available (US domestic only)
                                                 HStack {
-                                                    Text("• US Domestic:")
+                                                    Text("• Domestic:")
                                                         .font(.caption)
                                                     Spacer()
                                                     if let omdb = omdbDetails, let boxOffice = omdb.BoxOffice {
@@ -1226,12 +1229,30 @@ struct TMDBMovieDetailView: View {
                                                     Spacer()
                                                     Text("Data not available")
                                                         .font(.caption)
-                                                        .foregroundColor(.secondary)
+                                                    .foregroundColor(.secondary)
                                                 }
+                                            }
+                                        }
+                                        
+                                        // Post-Theatrical Section (Placeholder structure as requested)
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Text("Post-Theatrical")
+                                                .font(.subheadline)
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.secondary)
+                                                .padding(.top, 8)
+                                            
+                                            HStack {
+                                                Text("• Re-releases:")
+                                                    .font(.caption)
+                                                Spacer()
+                                                Text("Data not available")
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
                                             }
                                             
                                             HStack {
-                                                Text("• Post-theatrical:")
+                                                Text("• Home Media (Digital/Physical):")
                                                     .font(.caption)
                                                 Spacer()
                                                 Text("Data not available")
@@ -1273,7 +1294,7 @@ struct TMDBMovieDetailView: View {
                                         }
                                         
                                         HStack {
-                                            Text("Net Profit:")
+                                            Text(profit >= 0 ? "Net Profit:" : "Net Loss:")
                                                 .fontWeight(.medium)
                                             Spacer()
                                             Text(formatCurrency(profit))
@@ -1334,6 +1355,84 @@ struct TMDBMovieDetailView: View {
                                 .padding(.horizontal, 4)
                             }
                             .padding(.top)
+                        }
+                        
+                        // Revenue History Toggle
+                        if details.budget > 0 && details.revenue > 0 {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Divider()
+                                
+                                Button {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        showingBoxOfficeHistory.toggle()
+                                    }
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        Spacer()
+                                        
+                                        Text("Revenue History")
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
+                                        
+                                        Image(systemName: "chevron.down")
+                                            .font(.headline)
+                                            .foregroundColor(.blue)
+                                            .rotationEffect(.degrees(showingBoxOfficeHistory ? 180 : 0))
+                                        
+                                        Spacer()
+                                    }
+                                    .padding()
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(12)
+                                }
+                                .buttonStyle(.plain)
+                                
+                                if showingBoxOfficeHistory {
+                                    if #available(iOS 16.0, *) {
+                                        // Calculate split for the chart
+                                        let domesticRev: Int64? = {
+                                            if let omdb = omdbDetails,
+                                               let boxOfficeStr = omdb.BoxOffice,
+                                               boxOfficeStr != "N/A" {
+                                                return parseCurrencyString(boxOfficeStr)
+                                            }
+                                            return nil
+                                        }()
+                                        
+                                        let internationalRev: Int64? = {
+                                            guard let dom = domesticRev else { return nil }
+                                            return max(0, details.revenue - dom)
+                                        }()
+                                        
+                                        TabView {
+                                            BoxOfficeHistoryChart(
+                                                budget: details.budget,
+                                                totalBoxOffice: details.revenue,
+                                                domestic: domesticRev,
+                                                international: internationalRev,
+                                                releaseDate: {
+                                                    let df = DateFormatter()
+                                                    df.dateFormat = "yyyy-MM-dd"
+                                                    return df.date(from: movie.releaseDate ?? "")
+                                                }()
+                                            )
+                                            .padding(.horizontal, 4) // Minor padding for shadow clipping within TabView
+                                            
+                                            PostTheatricalChart()
+                                                .padding(.horizontal, 4)
+                                        }
+                                        .tabViewStyle(.page(indexDisplayMode: .always))
+                                        .frame(height: 320) // Increased height for Sim + Page Indicators
+                                        .indexViewStyle(.page(backgroundDisplayMode: .always))
+                                        .padding(.top, 16)
+                                        .transition(.opacity.combined(with: .move(edge: .top)))
+                                    } else {
+                                        Text("Chart requires iOS 16+")
+                                            .foregroundColor(.secondary)
+                                            .italic()
+                                    }
+                                }
+                            }
                         }
                     }
                     

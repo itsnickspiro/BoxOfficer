@@ -14,12 +14,7 @@ struct FilmDetailView: View {
     @Bindable var film: Film
     @Environment(\.modelContext) private var modelContext
     @State private var showingCompareView = false
-    @State private var chartViewMode: ChartViewMode = .breakdown
-    
-    enum ChartViewMode {
-        case breakdown
-        case performance
-    }
+    @State private var showingBoxOfficeHistory = false
     
     var body: some View {
         ScrollView {
@@ -147,118 +142,64 @@ struct FilmDetailView: View {
                 
                 // Box Office Analysis Section
                 if film.domesticBoxOffice != nil || film.internationalBoxOffice != nil || film.boxOffice != nil {
-                    VStack(alignment: .leading, spacing: 16) {
-                        HStack {
-                            Text("Box Office Analysis")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            
-                            Spacer()
-                            
-                            Picker("View", selection: $chartViewMode) {
-                                Text("Breakdown").tag(ChartViewMode.breakdown)
-                                Text("Performance").tag(ChartViewMode.performance)
+                // Revenue History Toggle
+                if (film.budget ?? 0) > 0 && (film.boxOffice ?? 0) > 0 {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Button {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                showingBoxOfficeHistory.toggle()
                             }
-                            .pickerStyle(.segmented)
-                            .frame(width: 200)
-                        }
-                        .padding(.horizontal)
-                        
-                        if chartViewMode == .breakdown {
-                            // Existing Pie Chart Breakdown
-                            if #available(iOS 16.0, *) {
-                                Chart {
-                                    if let domestic = film.domesticBoxOffice {
-                                        SectorMark(
-                                            angle: .value("Revenue", domestic),
-                                            innerRadius: .ratio(0.618),
-                                            angularInset: 1.5
-                                        )
-                                        .foregroundStyle(.blue)
-                                        .opacity(0.6)
-                                    }
-                                    
-                                    if let international = film.internationalBoxOffice {
-                                        SectorMark(
-                                            angle: .value("Revenue", international),
-                                            innerRadius: .ratio(0.618),
-                                            angularInset: 1.5
-                                        )
-                                        .foregroundStyle(.orange)
-                                        .opacity(0.6)
-                                    }
-                                }
-                                .frame(height: 200)
-                                .padding(.horizontal)
-                            } else {
-                                // Fallback on earlier versions - simple text breakdown
-                                VStack(alignment: .leading, spacing: 8) {
-                                    if let domestic = film.domesticBoxOffice {
-                                        HStack {
-                                            Text("Domestic:")
-                                            Spacer()
-                                            Text(domestic.formatted(.currency(code: "USD")))
-                                                .fontWeight(.semibold)
-                                        }
-                                    }
-                                    
-                                    if let international = film.internationalBoxOffice {
-                                        HStack {
-                                            Text("International:")
-                                            Spacer()
-                                            Text(international.formatted(.currency(code: "USD")))
-                                                .fontWeight(.semibold)
-                                        }
-                                    }
-                                }
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .cornerRadius(12)
-                                .padding(.horizontal)
-                            }
-                            
-                            // Legend for Pie Chart
-                            HStack {
-                                if film.domesticBoxOffice != nil {
-                                    HStack {
-                                        Circle()
-                                            .fill(.blue)
-                                            .frame(width: 12, height: 12)
-                                        Text("Domestic")
-                                            .font(.caption)
-                                    }
-                                }
+                        } label: {
+                            HStack(spacing: 8) {
+                                Spacer()
                                 
-                                if film.internationalBoxOffice != nil {
-                                    HStack {
-                                        Circle()
-                                            .fill(.orange)
-                                            .frame(width: 12, height: 12)
-                                        Text("International")
-                                            .font(.caption)
-                                    }
-                                }
+                                Text("Revenue History")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                
+                                Image(systemName: "chevron.down")
+                                    .font(.headline)
+                                    .foregroundColor(.blue)
+                                    .rotationEffect(.degrees(showingBoxOfficeHistory ? 180 : 0))
                                 
                                 Spacer()
                             }
-                            .padding(.horizontal)
-                            
-                        } else {
-                            // New Performance History Chart
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal)
+                        
+                        if showingBoxOfficeHistory {
                             if #available(iOS 16.0, *) {
-                                BoxOfficeHistoryChart(
-                                    budget: film.budget ?? 0,
-                                    totalBoxOffice: film.boxOffice ?? 0,
-                                    releaseDate: film.releaseDate
-                                )
+                                TabView {
+                                    BoxOfficeHistoryChart(
+                                        budget: film.budget ?? 0,
+                                        totalBoxOffice: film.boxOffice ?? 0,
+                                        domestic: film.domesticBoxOffice,
+                                        international: film.internationalBoxOffice,
+                                        releaseDate: film.releaseDate
+                                    )
+                                    .padding(.horizontal, 4)
+                                    
+                                    PostTheatricalChart()
+                                        .padding(.horizontal, 4)
+                                }
+                                .tabViewStyle(.page(indexDisplayMode: .always))
+                                .frame(height: 320)
+                                .indexViewStyle(.page(backgroundDisplayMode: .always))
                                 .padding(.horizontal)
-                                .transition(.opacity)
+                                .transition(.opacity.combined(with: .move(edge: .top)))
                             } else {
-                                ContentUnavailableView("Feature Unavailable", systemImage: "chart.xyaxis.line", description: Text("Graph is only available on iOS 16+"))
-                                    .padding()
+                                Text("Chart requires iOS 16+")
+                                    .foregroundColor(.secondary)
+                                    .italic()
+                                    .padding(.horizontal)
                             }
                         }
                     }
+                }
                 }
                 
                 // Overview

@@ -10,14 +10,19 @@ import Foundation
 // MARK: - TMDB API Manager
 class TMDBManager {
     static let shared = TMDBManager()
-    private let apiKey: String
-    private let omdbAPIKey: String
 
-    private init() {
-        self.apiKey = SecretsManager.shared.tmdbAPIKey
-        self.omdbAPIKey = SecretsManager.shared.omdbAPIKey
-    }
+    private let apiKey: String = {
+        guard let key = Bundle.main.object(forInfoDictionaryKey: "TMDB_API_KEY") as? String, !key.isEmpty else {
+            fatalError("TMDB_API_KEY not set in Info.plist. Add it via Secrets.xcconfig.")
+        }
+        return key
+    }()
 
+    private let omdbAPIKey: String = {
+        return Bundle.main.object(forInfoDictionaryKey: "OMDB_API_KEY") as? String ?? ""
+    }()
+
+    private init() {}
     func validateAPIConnection() async -> Bool {
         let urlString = "https://api.themoviedb.org/3/configuration?api_key=\(apiKey)"
         guard let url = URL(string: urlString) else { return false }
