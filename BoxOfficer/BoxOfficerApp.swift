@@ -54,7 +54,7 @@ struct BoxOfficerApp: App {
     // MARK: - Background Tasks
 
     /// The identifier used to register and schedule the background financial data refresh.
-    static let backgroundRefreshTaskID = "HomieLabz.BoxOfficer.refresh"
+    static let backgroundRefreshTaskID = "SpiroProductions.BoxOfficer.refresh"
 
     private func registerBackgroundTasks() {
         BGTaskScheduler.shared.register(

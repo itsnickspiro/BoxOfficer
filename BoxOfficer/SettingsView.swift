@@ -77,7 +77,7 @@ struct SettingsView: View {
                     Button(action: {
                         let subject = "BoxOfficer Feedback"
                         let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? subject
-                        if let url = URL(string: "mailto:support@homielabz.com?subject=\(encodedSubject)") {
+                        if let url = URL(string: "mailto:support@spiroproductions.com?subject=\(encodedSubject)") {
                             UIApplication.shared.open(url)
                         }
                     }) {
