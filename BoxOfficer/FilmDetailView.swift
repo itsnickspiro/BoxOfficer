@@ -9,7 +9,6 @@ import SwiftUI
 import Charts
 import SwiftData
 
-@available(iOS 17.0, *)
 struct FilmDetailView: View {
     @Bindable var film: Film
     @Environment(\.modelContext) private var modelContext
@@ -293,7 +292,6 @@ struct FilmDetailView: View {
     }
 }
 
-@available(iOS 17.0, *)
 struct MovieRatingsRow: View {
     let film: Film
     
@@ -355,8 +353,7 @@ struct FinancialCard: View {
 }
 
 #Preview {
-    if #available(iOS 17.0, *) {
-        NavigationView {
+            NavigationView {
             FilmDetailView(film: Film(
                 id: "1",
                 title: "Avatar: The Way of Water",
@@ -375,7 +372,4 @@ struct FinancialCard: View {
             ))
         }
         .modelContainer(for: Film.self, inMemory: true)
-    } else {
-        // Fallback on earlier versions
     }
-}

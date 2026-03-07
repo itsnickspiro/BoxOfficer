@@ -162,7 +162,7 @@ struct BoxOfficeHistoryChart: View {
                                 DragGesture()
                                     .onChanged { value in
                                         isDragging = true
-                                        let startX = geometry[proxy.plotAreaFrame].origin.x
+                                        let startX = proxy.plotFrame.map { geometry[$0].origin.x } ?? 0
                                         let currentX = value.location.x - startX
                                         
                                         if let week: Int = proxy.value(atX: currentX) {
@@ -197,9 +197,7 @@ struct BoxOfficeHistoryChart: View {
                 .padding(.top, 8)
                 
             } else {
-                if #available(iOS 17.0, *) {
-                    ContentUnavailableView("No Data", systemImage: "chart.xyaxis.line", description: Text("Box office data is not available for this film."))
-                }
+                ContentUnavailableView("No Data", systemImage: "chart.xyaxis.line", description: Text("Box office data is not available for this film."))
             }
         }
         .padding()

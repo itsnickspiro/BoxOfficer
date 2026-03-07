@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import UserNotifications
 
-@available(iOS 17.0, *)
 struct NotificationsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(filter: #Predicate<Film> { film in 
@@ -315,7 +314,6 @@ struct BoxOfficeNotification: Identifiable, Hashable, Codable {
     }
 }
 
-@available(iOS 17.0, *)
 struct NotificationSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("enableFinancialUpdates") private var enableFinancialUpdates = true
@@ -325,8 +323,7 @@ struct NotificationSettingsView: View {
     @AppStorage("enableInternationalChanges") private var enableInternationalChanges = false
     @AppStorage("updateFrequency") private var updateFrequency = "Daily"
     
-    @available(iOS 17.0, *)
-    var body: some View {
+        var body: some View {
         NavigationView {
             Form {
                 Section("Financial Data Notifications") {
@@ -377,10 +374,6 @@ struct NotificationSettingsView: View {
 }
 
 #Preview {
-    if #available(iOS 17.0, *) {
-        NotificationsView()
+            NotificationsView()
             .modelContainer(for: Film.self, inMemory: true)
-    } else {
-        // Fallback on earlier versions
     }
-}

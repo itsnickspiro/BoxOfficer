@@ -8,7 +8,6 @@
 import Foundation
 import SwiftData
 
-@available(iOS 17.0, *)
 @Model
 final class Film {
     var tmdbID: Int? // Store the numeric TMDB ID for reliable fetching
@@ -107,7 +106,6 @@ final class Film {
     }
 }
 
-@available(iOS 17.0, *)
 extension Film {
     func toggleWatchlist() {
         isInWatchlist.toggle()

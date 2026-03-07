@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import Charts
 
-@available(iOS 17.0, *)
 struct CompareFilmsView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var films: [Film]
@@ -216,7 +215,6 @@ struct CompareFilmsView: View {
 }
 
 // MARK: - Movie Row Components
-@available(iOS 17.0, *)
 struct TMDBMovieRowCompare: View {
     let movie: TMDBMovie
     let onTap: () -> Void
@@ -289,7 +287,6 @@ struct TMDBMovieRowCompare: View {
     }
 }
 
-@available(iOS 17.0, *)
 struct LocalFilmRowCompare: View {
     let film: Film
     let onTap: () -> Void
@@ -353,7 +350,6 @@ struct LocalFilmRowCompare: View {
     }
 }
 
-@available(iOS 17.0, *)
 struct ComparisonDetailView: View {
     let film1: Film
     let film2: Film
@@ -468,7 +464,6 @@ struct ComparisonDetailView: View {
     }
 }
 
-@available(iOS 17.0, *)
 struct FilmComparisonHeader: View {
     let film: Film
     
@@ -504,7 +499,6 @@ struct FilmComparisonHeader: View {
     }
 }
 
-@available(iOS 17.0, *)
 struct ComparisonMetric: View {
     let title: String
     let value1: Int64
@@ -564,7 +558,6 @@ struct ComparisonMetric: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     CompareFilmsView(selectedFilm: Film(
         id: "1",

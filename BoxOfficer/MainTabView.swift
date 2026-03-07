@@ -8,22 +8,22 @@
 import SwiftUI
 import SwiftData
 
-@available(iOS 17.0, *)
 struct MainTabView: View {
     var body: some View {
         TabView {
-            if #available(iOS 17.0, *) {
-                HomeView()
+                            HomeView()
                     .tabItem {
                         Label("Home", systemImage: "house.fill")
                     }
-            } else {
-                // Fallback on earlier versions
-            }
-            
+                        
             WatchlistView()
                 .tabItem {
                     Label("Watchlist", systemImage: "bookmark.fill")
+                }
+
+            CompareTabView()
+                .tabItem {
+                    Label("Compare", systemImage: "chart.bar.xaxis")
                 }
             
             NotificationsView()
@@ -41,10 +41,6 @@ struct MainTabView: View {
 }
 
 #Preview {
-    if #available(iOS 17.0, *) {
-        MainTabView()
+            MainTabView()
             .modelContainer(for: Film.self, inMemory: true)
-    } else {
-        // Fallback on earlier versions
     }
-}

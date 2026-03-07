@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@available(iOS 17.0, *)
 struct FilmRowView: View {
     let film: Film
     
@@ -117,8 +116,7 @@ struct FilmRowView: View {
 
 #Preview {
     List {
-        if #available(iOS 17, *) {
-            FilmRowView(film: Film(
+                    FilmRowView(film: Film(
                 id: "1",
                 title: "Avatar: The Way of Water",
                 releaseDate: Date(),
@@ -128,12 +126,8 @@ struct FilmRowView: View {
                 director: "James Cameron",
                 overview: "A sequel to Avatar"
             ))
-        } else {
-            // Fallback on earlier versions
-        }
-        
-        if #available(iOS 17, *) {
-            FilmRowView(film: Film(
+                
+                    FilmRowView(film: Film(
                 id: "2",
                 title: "The Flash",
                 releaseDate: Date(),
@@ -143,8 +137,5 @@ struct FilmRowView: View {
                 director: "Andy Muschietti",
                 overview: "DC superhero film"
             ))
-        } else {
-            // Fallback on earlier versions
-        }
-    }
+            }
 }

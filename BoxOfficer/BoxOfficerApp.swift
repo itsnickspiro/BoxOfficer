@@ -10,7 +10,6 @@ import SwiftData
 import UserNotifications
 import BackgroundTasks
 
-@available(iOS 17.0, *)
 @main
 struct BoxOfficerApp: App {
     var sharedModelContainer: ModelContainer = {

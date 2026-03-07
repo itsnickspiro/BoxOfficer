@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@available(iOS 17.0, *)
 struct RottenTomatoesView: View {
     let film: Film
     let size: CGFloat
@@ -69,7 +68,6 @@ struct RottenTomatoesView: View {
 }
 
 // MARK: - View Extensions
-@available(iOS 17.0, *)
 extension View {
     @ViewBuilder
     func conditionalBackground(showLabels: Bool) -> some View {
@@ -87,57 +85,10 @@ extension View {
 
 #Preview {
     VStack(spacing: 20) {
-        if #available(iOS 17, *) {
-            // High scoring film
-            RottenTomatoesView(
-                film: Film(
-                    id: "1",
-                    title: "Great Movie",
-                    criticsScore: 95,
-                    audienceScore: 88
-                ),
-                size: 16,
-                showLabels: true
-            )
-            
-            // Mixed scores
-            RottenTomatoesView(
-                film: Film(
-                    id: "2",
-                    title: "Mixed Reviews",
-                    criticsScore: 65,
-                    audienceScore: 45
-                ),
-                size: 16,
-                showLabels: true
-            )
-            
-            // Low scoring film
-            RottenTomatoesView(
-                film: Film(
-                    id: "3",
-                    title: "Bad Movie",
-                    criticsScore: 25,
-                    audienceScore: 30
-                ),
-                size: 16,
-                showLabels: true
-            )
-            
-            // Compact version without labels
-            RottenTomatoesView(
-                film: Film(
-                    id: "4",
-                    title: "Compact View",
-                    criticsScore: 78,
-                    audienceScore: 82
-                ),
-                size: 14,
-                showLabels: false
-            )
-        } else {
-            Text("iOS 17 required")
-        }
+        RottenTomatoesView(film: Film(id: "1", title: "Great Movie", criticsScore: 95, audienceScore: 88), size: 16, showLabels: true)
+        RottenTomatoesView(film: Film(id: "2", title: "Mixed Reviews", criticsScore: 65, audienceScore: 45), size: 16, showLabels: true)
+        RottenTomatoesView(film: Film(id: "3", title: "Bad Movie", criticsScore: 25, audienceScore: 30), size: 16, showLabels: true)
+        RottenTomatoesView(film: Film(id: "4", title: "Compact View", criticsScore: 78, audienceScore: 82), size: 14, showLabels: false)
     }
     .padding()
 }

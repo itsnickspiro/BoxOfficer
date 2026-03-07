@@ -88,7 +88,6 @@ struct TMDBMovieRow: View {
 }
 
 // MARK: - HomeView
-@available(iOS 17.0, *)
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Film.title) private var films: [Film]
@@ -586,53 +585,21 @@ struct HomeView: View {
     }
     
     private var streamingPlaceholder: some View {
-        Group {
-            if #available(iOS 17.0, *) {
-                ContentUnavailableView(
-                    "Digital",
-                    systemImage: "tv",
-                    description: Text("Coming soon: Browse what's trending on streaming platforms.")
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                VStack {
-                    Image(systemName: "tv")
-                        .font(.largeTitle)
-                        .foregroundColor(.secondary)
-                    Text("Digital")
-                        .font(.headline)
-                    Text("Coming soon: Browse what's trending on streaming platforms.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-        }
+        ContentUnavailableView(
+            "Digital",
+            systemImage: "tv",
+            description: Text("Coming soon: Browse what's trending on streaming platforms.")
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var topInternationalPlaceholder: some View {
-        Group {
-            if #available(iOS 17.0, *) {
-                ContentUnavailableView(
-                    "Top Grossing",
-                    systemImage: "globe",
-                    description: Text("Coming soon: The top grossing movies by revenue.")
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                VStack {
-                    Image(systemName: "globe")
-                        .font(.largeTitle)
-                        .foregroundColor(.secondary)
-                    Text("Top Grossing")
-                        .font(.headline)
-                    Text("Coming soon: The top grossing movies by revenue.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-        }
+        ContentUnavailableView(
+            "Top Grossing",
+            systemImage: "globe",
+            description: Text("Coming soon: The top grossing movies by revenue.")
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private func loadRecentMovies() {
@@ -945,7 +912,6 @@ struct HomeView: View {
 }
 
 // MARK: - Movie Detail Sheet
-@available(iOS 17.0, *)
 struct TMDBMovieDetailView: View {
     let movie: TMDBMovie
     let onAddToWatchlist: (Film) -> Void
@@ -1640,8 +1606,7 @@ struct TMDBMovieDetailView: View {
     }
     
     // MARK: - TMDB Movie Ratings Row (matching FilmDetailView style)
-    @available(iOS 17.0, *)
-    struct TMDBMovieRatingsRow: View {
+        struct TMDBMovieRatingsRow: View {
         let movie: TMDBMovie
         let rottenTomatoesScore: Int?
         let omdbDetails: OMDbResponse?
@@ -1824,8 +1789,7 @@ struct TMDBMovieDetailView: View {
     }
     
     // MARK: - TMDB Reviews Popup View
-    @available(iOS 17.0, *)
-    struct TMDBReviewsPopupView: View {
+        struct TMDBReviewsPopupView: View {
         let movieTitle: String
         let reviewType: ReviewType
         let score: Int?
@@ -1950,8 +1914,7 @@ struct TMDBMovieDetailView: View {
     }
     
     // MARK: - TMDB Review Card View
-    @available(iOS 17.0, *)
-    struct TMDBReviewCardView: View {
+        struct TMDBReviewCardView: View {
         let review: TMDBReviewData
         
         var body: some View {
@@ -2188,11 +2151,7 @@ struct PersonCard: View {
 }
 
 #Preview {
-    if #available(iOS 17, *) {
-        HomeView()
-            .modelContainer(for: Film.self, inMemory: true)
-    } else {
-        Text("Requires iOS 17 or later")
-    }
+    HomeView()
+        .modelContainer(for: Film.self, inMemory: true)
 }
 

@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		01CB9CFD2F5BDF75000CF421 /* CompareTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CB9CFC2F5BDF75000CF421 /* CompareTabView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		014448762E9DF0680007A499 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		014448662E9DF0670007A499 /* BoxOfficer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BoxOfficer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		014448752E9DF0680007A499 /* BoxOfficerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BoxOfficerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0144487F2E9DF0680007A499 /* BoxOfficerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BoxOfficerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		01CB9CFC2F5BDF75000CF421 /* CompareTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareTabView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -92,6 +97,7 @@
 				014448782E9DF0680007A499 /* BoxOfficerTests */,
 				014448822E9DF0680007A499 /* BoxOfficerUITests */,
 				014448672E9DF0670007A499 /* Products */,
+				01CB9CFC2F5BDF75000CF421 /* CompareTabView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -249,6 +255,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01CB9CFD2F5BDF75000CF421 /* CompareTabView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -415,8 +422,8 @@
 				DEVELOPMENT_TEAM = WRVY4Q5HA5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = SpiroProductions.BoxOfficer.refresh;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
-				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = "SpiroProductions.BoxOfficer.refresh";
 				INFOPLIST_KEY_OMDB_API_KEY = "$(OMDB_API_KEY)";
 				INFOPLIST_KEY_TMDB_API_KEY = "$(TMDB_API_KEY)";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -424,7 +431,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -456,8 +463,8 @@
 				DEVELOPMENT_TEAM = WRVY4Q5HA5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = SpiroProductions.BoxOfficer.refresh;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
-				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = "SpiroProductions.BoxOfficer.refresh";
 				INFOPLIST_KEY_OMDB_API_KEY = "$(OMDB_API_KEY)";
 				INFOPLIST_KEY_TMDB_API_KEY = "$(TMDB_API_KEY)";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -465,7 +472,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -495,7 +502,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = WRVY4Q5HA5;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = SpiroProductions.BoxOfficerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -521,7 +528,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = WRVY4Q5HA5;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = SpiroProductions.BoxOfficerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

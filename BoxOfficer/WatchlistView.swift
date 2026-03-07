@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 
-@available(iOS 17.0, *)
 struct WatchlistView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(filter: #Predicate<Film> { $0.isInWatchlist }, 
@@ -62,6 +61,9 @@ struct WatchlistView: View {
     
     private var watchlistContent: some View {
         VStack(spacing: 0) {
+            // Stats summary bar
+            statsBar
+
             // Films list
             List {
                 ForEach(filteredFilms) { film in
@@ -72,6 +74,42 @@ struct WatchlistView: View {
                 .onDelete(perform: removeFromWatchlist)
             }
         }
+    }
+
+    private var statsBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                StatPill(
+                    title: "Films",
+                    value: "\(watchlistFilms.count)",
+                    color: .primary
+                )
+                if let totalBO = calculateTotalBoxOffice() {
+                    StatPill(
+                        title: "Total Box Office",
+                        value: Formatters.currency(amount: totalBO),
+                        color: .blue
+                    )
+                }
+                if let avgBudget = calculateAverageBudget() {
+                    StatPill(
+                        title: "Avg Budget",
+                        value: Formatters.currency(amount: avgBudget),
+                        color: .orange
+                    )
+                }
+                if let totalProfit = calculateTotalProfit() {
+                    StatPill(
+                        title: "Total Profit",
+                        value: Formatters.currency(amount: totalProfit),
+                        color: totalProfit >= 0 ? .green : .red
+                    )
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+        }
+        .background(Color(.systemGroupedBackground))
     }
     
     private func removeFromWatchlist(offsets: IndexSet) {
@@ -104,7 +142,6 @@ struct WatchlistView: View {
 
 }
 
-@available(iOS 17.0, *)
 struct WatchlistRowView: View {
     let film: Film
     
@@ -199,11 +236,7 @@ struct StatPill: View {
 }
 
 #Preview {
-    if #available(iOS 17, *) {
-        WatchlistView()
+            WatchlistView()
             .modelContainer(for: Film.self, inMemory: true)
-    } else {
-        // Fallback on earlier versions
     }
-}
 

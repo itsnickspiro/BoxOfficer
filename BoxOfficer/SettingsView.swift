@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 import StoreKit
 
-@available(iOS 17.0, *)
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var films: [Film]
@@ -105,12 +104,8 @@ struct SettingsView: View {
             Text("This will permanently delete all film data. This action cannot be undone.")
         }
         .sheet(isPresented: $showingExportSheet) {
-            if #available(iOS 17, *) {
-                ExportDataView(films: films)
-            } else {
-                // Fallback on earlier versions
-            }
-        }
+                            ExportDataView(films: films)
+                    }
         .sheet(isPresented: $showingAbout) {
             AboutView()
         }
@@ -180,7 +175,6 @@ struct ChartSettingsView: View {
     }
 }
 
-@available(iOS 17, *)
 struct ExportDataView: View {
     let films: [Film]
     @Environment(\.dismiss) private var dismiss
@@ -429,11 +423,7 @@ struct FeatureRow: View {
 }
 
 #Preview {
-    if #available(iOS 17.0, *) {
-        SettingsView()
+            SettingsView()
             .modelContainer(for: Film.self, inMemory: true)
-    } else {
-        // Fallback on earlier versions
     }
-}
 

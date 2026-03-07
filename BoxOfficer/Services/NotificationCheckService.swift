@@ -11,7 +11,6 @@ import Foundation
 import SwiftData
 import UserNotifications
 
-@available(iOS 17.0, *)
 final class NotificationCheckService {
     static let shared = NotificationCheckService()
     private init() {}

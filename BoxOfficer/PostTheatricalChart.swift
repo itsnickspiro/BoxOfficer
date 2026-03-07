@@ -8,7 +8,7 @@
 import SwiftUI
 import Charts
 
-@available(iOS 16.0, *)
+
 struct PostTheatricalChart: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -38,22 +38,7 @@ struct PostTheatricalChart: View {
                 }
                 .frame(height: 250)
                 
-                if #available(iOS 17.0, *) {
-                    ContentUnavailableView("Data Unavailable", systemImage: "tv", description: Text("Digital & Physical sales data is not currently available."))
-                } else {
-                    VStack(spacing: 8) {
-                        Image(systemName: "tv")
-                            .font(.largeTitle)
-                            .foregroundColor(.secondary)
-                        Text("Data Unavailable")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        Text("Digital & Physical sales data is not currently available.")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                }
+                ContentUnavailableView("Data Unavailable", systemImage: "tv", description: Text("Digital & Physical sales data is not currently available."))
             }
         }
         .padding()
