@@ -19,6 +19,7 @@ build/
 # Secrets - NEVER commit these files
 BoxOfficer/Secrets.xcconfig
 BoxOfficer/Secrets.plist
+BoxOfficer/Info.plist
 
 # macOS
 .DS_Store

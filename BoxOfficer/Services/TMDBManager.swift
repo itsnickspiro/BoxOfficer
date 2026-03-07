@@ -13,7 +13,10 @@ class TMDBManager {
 
     private let apiKey: String = {
         guard let key = Bundle.main.object(forInfoDictionaryKey: "TMDB_API_KEY") as? String, !key.isEmpty else {
-            fatalError("TMDB_API_KEY not set in Info.plist. Add it via Secrets.xcconfig.")
+            // Key missing — API calls will fail gracefully rather than crashing.
+            // Fix: set Secrets.xcconfig as the base configuration for Debug and Release
+            // in the project's Info tab (Xcode → Project → Info → Configurations).
+            return ""
         }
         return key
     }()
